@@ -18,6 +18,7 @@ jobs:
       with:
         azcliversion: 2.34.1
         inlinescript: |
+          pwd
           az bicep build --file .\azuredeploy.bicep
     - name: Generate ARM markdowns
       run: |
