@@ -9,6 +9,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: whereami
+      run: |
+        $PWD
+      shell: pwsh
     - name: Azure CLI
       uses: azure/CLI@v1
       with:
