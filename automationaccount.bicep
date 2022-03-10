@@ -1,4 +1,4 @@
-// ContentVersion: 1.0.0.2
+// ContentVersion: 1.0.0.3
 
 @description('The resource name')
 param name string

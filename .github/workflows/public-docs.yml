@@ -1,0 +1,41 @@
+name: Generate ARM templates docs
+on:
+  push:
+    branches: [ main ]
+jobs:
+  arm_docs:
+    name: Generate ARM template docs
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Azure CLI
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.34.1
+        inlinescript: |
+          az bicep build --file .\azuredeploy.bicep
+    - name: Generate ARM markdowns
+      run: |
+        Install-Module -Name 'PSDocs.Azure' -Repository PSGallery -force;
+        #$VerbosePreference = 'Continue';
+        Get-AzDocTemplateFile | ForEach-Object {
+          $TemplateFile = Get-Item -Path $_.TemplateFile;
+          $RepoName = $TemplateFile.Directory.Parent.Name;
+          $Version = (Get-Content .\azuredeploy.bicep)[0].substring(3).split(':').trim()[1]
+          $docName = "README";
+          # Generate markdown
+          Invoke-PSDocument -Module PSDocs.Azure -OutputPath "out/docs" -InputObject $TemplateFile.FullName -InstanceName $docName;
+        };
+        Move-Item "out/docs/$($docName).md" . -Force;
+        Remove-Item .\azuredeploy.json -force;
+      shell: pwsh
+    - name: Setup Git Config
+      run:
+        git config user.name "GitHub Action";
+        git config user.email "<>";
+    - name: Update ReadME
+      run:
+        git add *;
+        git commit -m "Updating README with latest documentation";
+        git push origin main
