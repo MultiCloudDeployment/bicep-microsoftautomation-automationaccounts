@@ -16,20 +16,16 @@ param PublicNetworkAccess bool = true
   'Basic'
 ])
 param SkuName string = 'Free'
-@description('The name of the Reosurce Group')
-param ResourceGroupName string
 
-var deploymentName = '${name}-deployment'
-
-module AutomationAccount 'automationaccount.bicep' = {
-  name: deploymentName
-  scope: resourceGroup(ResourceGroupName)
-  params: {
-    name: name
-    location: location
-    tags: tags
-    DisableLocalAuth: DisableLocalAuth
-    PublicNetworkAccess: PublicNetworkAccess
-    SkuName: SkuName
+resource AutomationAccount 'Microsoft.Automation/automationAccounts@2021-06-22' = {
+  name: name
+  location: location
+  tags: tags
+  properties: {
+    disableLocalAuth: DisableLocalAuth
+    publicNetworkAccess: PublicNetworkAccess
+    sku: {
+      name: SkuName
+    }
   }
 }
