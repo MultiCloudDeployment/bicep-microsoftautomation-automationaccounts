@@ -9,6 +9,12 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Azure CLI
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.34.1
+        inlinescript: |
+          az bicep build --file .\azuredeploy.bicep
     - name: Generate ARM markdowns
       run: |
         Install-Module -Name 'PSDocs.Azure' -Repository PSGallery -force;
@@ -16,18 +22,13 @@ jobs:
         Get-AzDocTemplateFile | ForEach-Object {
           $TemplateFile = Get-Item -Path $_.TemplateFile;
           $RepoName = $TemplateFile.Directory.Parent.Name;
-          $Template = Get-Content $TemplateFile |ConvertFrom-Json;
-          $Version = $Template.ContentVersion;
+          $Version = (Get-Content .\azuredeploy.bicep)[0].substring(3).split(':').trim()[1]
           $docName = "README";
-          $ReadmeHeader = "[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMultiCloudDeployment%2F$($RepoName)%2F$($Version)%2Fazuredeploy.json)"
           # Generate markdown
           Invoke-PSDocument -Module PSDocs.Azure -OutputPath "out/docs" -InputObject $TemplateFile.FullName -InstanceName $docName;
         };
-        $Readme = Get-Content "out/docs/$($docName).md";
-        Write-Output $ReadmeHeader |Out-File "out/docs/$($docName).md" -Force;
-        Write-Output $Readme |Out-File "out/docs/$($docName).md" -Append;
-        #Get-Content "out/docs/$($docName).md";
-        Move-Item "out/docs/$($docName).md" . -Force
+        Move-Item "out/docs/$($docName).md" . -Force;
+        Remove-Item .\azuredeploy.json -force;
       shell: pwsh
     - name: Setup Git Config
       run:
