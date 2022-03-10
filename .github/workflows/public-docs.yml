@@ -9,18 +9,12 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: whereami
-      run: |
-        $PWD
-      shell: pwsh
     - name: Azure CLI
       uses: azure/CLI@v1
       with:
         azcliversion: 2.34.1
         inlinescript: |
-          pwd
-          ls -l
-          az bicep build --file .\azuredeploy.bicep
+          az bicep build --file azuredeploy.bicep
     - name: Generate ARM markdowns
       run: |
         Install-Module -Name 'PSDocs.Azure' -Repository PSGallery -force;
