@@ -70,41 +70,6 @@ The name of the Reosurce Group
 
 ## Snippets
 
-### Parameter file
-
-```json
-{
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "metadata": {
-        "template": "azuredeploy.json"
-    },
-    "parameters": {
-        "name": {
-            "value": ""
-        },
-        "location": {
-            "value": "[resourceGroup().location]"
-        },
-        "tags": {
-            "value": {}
-        },
-        "DisableLocalAuth": {
-            "value": false
-        },
-        "PublicNetworkAccess": {
-            "value": true
-        },
-        "SkuName": {
-            "value": "Free"
-        },
-        "ResourceGroupName": {
-            "value": ""
-        }
-    }
-}
-```
-
 ### Command line
 
 #### PowerShell
